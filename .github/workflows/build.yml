@@ -1,0 +1,40 @@
+name: Compilar APK
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ubicar proyecto (descomprime el ZIP si lo subiste sin extraer)
+        id: ubicar
+        run: |
+          if [ ! -d app ] && [ -f VideoRespaldo.zip ]; then
+            mkdir -p proyecto
+            unzip -q VideoRespaldo.zip -d proyecto
+            echo "dir=proyecto" >> "$GITHUB_OUTPUT"
+          else
+            echo "dir=." >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.9
+
+      - name: Compilar
+        working-directory: ${{ steps.ubicar.outputs.dir }}
+        run: gradle assembleDebug --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VideoRespaldo-APK
+          path: ${{ steps.ubicar.outputs.dir }}/app/build/outputs/apk/debug/*.apkx
