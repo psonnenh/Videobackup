@@ -37,4 +37,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: VideoRespaldo-APK
-          path: ${{ steps.ubicar.outputs.dir }}/app/build/outputs/apk/debug/*.apkx
+          path: ${{ steps.ubicar.outputs.dir }}/app/build/outputs/apk/debug/*.apk
